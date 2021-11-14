@@ -1,0 +1,12 @@
+[{
+    "name": "queue-scaling-rule",
+    "type": "azureQueue",
+    "auth": [
+        {
+          "secretRef": "storage-connection",
+          "triggerParameter": "connection"
+        }
+    ],
+    "queueLength": 3,
+    "queueName": "myqueue-items"
+}]
