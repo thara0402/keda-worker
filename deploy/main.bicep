@@ -14,3 +14,11 @@ module storage 'storage.bicep' = {
     storageAccountName: storageAccountName
   }
 }
+
+module containerapp 'containerapp.bicep' = {
+  name: 'container-app'
+  params: {
+    environmentId: environment.outputs.environmentId
+    storageConnectionString: storage.outputs.storageConnectionString
+  }
+}
