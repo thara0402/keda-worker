@@ -1,16 +1,26 @@
+param containerAppName string
+param location string = resourceGroup().location
 param environmentId string
+param containerImage string
+param revisionSuffix string
+@allowed([
+  'multiple'
+  'single'
+])
+param revisionMode string = 'single'
 @secure()
 param storageConnectionString string
-param location string = resourceGroup().location
 
-resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
-  name: 'queue-reader-function'
-  kind: 'containerapp'
+resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
+  name: containerAppName
   location: location
   properties: {
-    kubeEnvironmentId: environmentId
+    managedEnvironmentId: environmentId
     configuration: {
-      activeRevisionsMode: 'single'
+      activeRevisionsMode: revisionMode
+      dapr:{
+        enabled:false
+      }
       secrets: [
         {
           name: 'storage-connection'
@@ -19,10 +29,15 @@ resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
       ]   
     }
     template: {
+      revisionSuffix: revisionSuffix
       containers: [
         {
-          image: 'thara0402/queue-reader-function:0.1.0'
-          name: 'queue-reader-function'
+          image: containerImage
+          name: containerAppName
+          resources: {
+            cpu: '0.25'
+            memory: '0.5Gi'
+          }
           env: [
             {
               name: 'AzureWebJobsStorage'
